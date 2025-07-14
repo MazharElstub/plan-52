@@ -26,8 +26,11 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# Convex
-.convex/
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
 
 # Metro
 .metro-health-check*

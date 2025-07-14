@@ -1,20 +1,12 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function TabLayout() {
+export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8E8E93',
-        tabBarStyle: {
-          backgroundColor: '#1C1C1E',
-          borderTopColor: '#2C2C2E',
-        },
-        headerStyle: {
-          backgroundColor: '#000000',
-        },
-        headerTintColor: '#FFFFFF',
+        headerShown: false,
       }}
     >
       <Tabs.Screen
@@ -38,7 +30,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="add"
         options={{
-          title: 'Add',
+          title: 'Add Event',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="add-circle-outline" size={size} color={color} />
           ),

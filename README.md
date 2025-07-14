@@ -1,105 +1,70 @@
-# Weekend Calendar App
+# Weekend Planner
 
-A mobile-first calendar app focused on weekend planning, built with React Native, Expo, and Convex.
+A mobile-first weekend calendar app built with React Native and Expo Router, designed to help users plan their weekend activities.
 
 ## Features
 
-- **Dashboard View**: Visualize your next 12 months of weekends at a glance
-- **Calendar View**: Scrollable monthly view with weekend events
-- **Event Management**: Add plans or travel events for your weekends
-- **User Profile**: Manage settings and preferences
+- **Dashboard View**: 12-month weekend overview with status indicators
+- **Calendar View**: Monthly scrollable calendar with event details
+- **Event Management**: Add, edit, and delete weekend events
+- **Event Types**: Distinguish between flexible plans and travel commitments
+- **Real-time Sync**: Firebase Firestore for cross-device synchronization
+- **Authentication**: Firebase Auth with email/password
 
 ## Tech Stack
 
-- **Frontend**: React Native with Expo
-- **Backend**: Convex (real-time database)
-- **Navigation**: Expo Router
-- **Styling**: React Native StyleSheet
-- **Icons**: Expo Vector Icons
+- **Frontend**: React Native with Expo Router
+- **Database**: Firebase Firestore
+- **Authentication**: Firebase Authentication
+- **Platform**: iOS and Android compatible
 
 ## Getting Started
 
-### Prerequisites
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-- Node.js (v14 or higher)
-- npm or yarn
-- Expo Go app on your phone (for testing)
-- iOS Simulator (Mac only) or Android Emulator (optional)
+2. Set up Firebase:
+   - Create a new Firebase project
+   - Enable Firestore and Authentication
+   - Update `firebase/config.ts` with your Firebase configuration
 
-### Installation
+3. Start the development server:
+   ```bash
+   npm start
+   ```
 
-1. Clone the repository:
-```bash
-git clone [your-repo-url]
-cd weekend-calendar-app
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
-```bash
-cp .env.local.example .env.local
-# Edit .env.local and add your Convex deployment URL
-```
-
-4. Start Convex development server:
-```bash
-npx convex dev
-```
-
-5. In a new terminal, start Expo:
-```bash
-npx expo start
-```
-
-### Running the App
-
-- **iOS**: Press `i` in the terminal or scan QR code with Camera app
-- **Android**: Press `a` in the terminal or scan QR code in Expo Go app
-- **Web**: Press `w` in the terminal (limited functionality)
+4. Run on your platform:
+   ```bash
+   # iOS
+   npm run ios
+   
+   # Android
+   npm run android
+   
+   # Web
+   npm run web
+   ```
 
 ## Project Structure
 
 ```
-├── app/                    # Expo Router screens
-│   ├── (tabs)/            # Tab navigation screens
-│   │   ├── dashboard.tsx  # 12-month weekend overview
-│   │   ├── calendar.tsx   # Monthly calendar view
-│   │   ├── add.tsx        # Add new event
-│   │   └── profile.tsx    # User profile
-│   └── _layout.tsx        # Root layout with Convex Provider
-├── convex/                # Backend functions
-│   ├── schema.ts          # Database schema
-│   ├── events.ts          # Event CRUD operations
-│   └── users.ts           # User management
-├── components/            # Reusable components
-└── assets/                # Images, fonts, etc.
+app/
+├── (tabs)/           # Tab navigation screens
+├── auth/             # Authentication screens
+└── _layout.tsx       # Root layout
+
+components/           # Reusable UI components
+firebase/            # Firebase configuration and services
 ```
 
-## Database Schema
+## Firebase Collections
 
-### Users
-- Profile information
-- Timezone settings
-- Notification preferences
-
-### Events
-- Title and description
-- Type (plans or travel)
-- Weekend selection (Saturday/Sunday)
-- Time settings (all-day or specific times)
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- `users`: User profiles and settings
+- `events`: Weekend events with details
+- `weekends`: Weekend status calculations (optional)
 
 ## License
 
-This project is licensed under the MIT License.
+MIT License

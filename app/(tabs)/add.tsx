@@ -1,195 +1,81 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TextInput,
-  TouchableOpacity,
-  Switch,
-  Alert,
-  ScrollView,
-} from 'react-native';
-import { useMutation } from 'convex/react';
-import { api } from '../../convex/_generated/api';
-import { router } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Switch } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AddEvent() {
-  const createEvent = useMutation(api.events.createEvent);
-  
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [type, setType] = useState<'plan' | 'travel'>('plan');
-  const [includesSaturday, setIncludesSaturday] = useState(true);
-  const [includesSunday, setIncludesSunday] = useState(true);
-  const [isAllDay, setIsAllDay] = useState(true);
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('17:00');
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  const handleSubmit = async () => {
-    if (!title.trim()) {
-      Alert.alert('Error', 'Please enter a title for your event');
-      return;
-    }
-
-    if (!includesSaturday && !includesSunday) {
-      Alert.alert('Error', 'Please select at least one day (Saturday or Sunday)');
-      return;
-    }
-
-    try {
-      // Calculate start and end dates based on selected weekend
-      const startDate = new Date(selectedDate);
-      const endDate = new Date(selectedDate);
-      
-      // Adjust to weekend dates
-      const dayOfWeek = startDate.getDay();
-      const daysToSaturday = (6 - dayOfWeek) % 7;
-      startDate.setDate(startDate.getDate() + daysToSaturday);
-      
-      if (includesSunday) {
-        endDate.setDate(startDate.getDate() + 1);
-      } else {
-        endDate.setDate(startDate.getDate());
-      }
-
-      await createEvent({
-        title: title.trim(),
-        description: description.trim() || undefined,
-        type,
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0],
-        includesSaturday,
-        includesSunday,
-        startTime: isAllDay ? undefined : startTime,
-        endTime: isAllDay ? undefined : endTime,
-        isAllDay,
-      });
-
-      Alert.alert('Success', 'Event created successfully!', [
-        { text: 'OK', onPress: () => router.push('/dashboard') }
-      ]);
-      
-      // Reset form
-      setTitle('');
-      setDescription('');
-      setType('plan');
-      setIncludesSaturday(true);
-      setIncludesSunday(true);
-      setIsAllDay(true);
-      
-    } catch (error) {
-      Alert.alert('Error', 'Failed to create event. Please try again.');
-    }
-  };
+  const [eventData, setEventData] = useState({
+    title: '',
+    description: '',
+    isTravel: false,
+    selectedDays: { saturday: false, sunday: false },
+    startTime: '',
+    endTime: '',
+  });
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>New Event</Text>
-        <Text style={styles.subtitle}>Plan a New Weekend Event</Text>
-
+      <View style={styles.header}>
+        <Text style={styles.title}>Add Event</Text>
+        <Text style={styles.subtitle}>Plan your weekend</Text>
+      </View>
+      
+      <ScrollView style={styles.content}>
         <View style={styles.form}>
           <Text style={styles.label}>Event Title</Text>
           <TextInput
             style={styles.input}
-            value={title}
-            onChangeText={setTitle}
-            placeholder="Enter event title..."
-            placeholderTextColor="#8E8E93"
+            value={eventData.title}
+            onChangeText={(text) => setEventData({...eventData, title: text})}
+            placeholder="Enter event title"
           />
-
-          <Text style={styles.label}>Description (Optional)</Text>
+          
+          <Text style={styles.label}>Description</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Add more details..."
-            placeholderTextColor="#8E8E93"
+            value={eventData.description}
+            onChangeText={(text) => setEventData({...eventData, description: text})}
+            placeholder="Enter event description"
             multiline
-            numberOfLines={3}
+            numberOfLines={4}
           />
-
-          <Text style={styles.label}>Event Type</Text>
-          <View style={styles.typeContainer}>
-            <TouchableOpacity
-              style={[styles.typeButton, type === 'plan' && styles.activeType]}
-              onPress={() => setType('plan')}
-            >
-              <Text style={[styles.typeText, type === 'plan' && styles.activeTypeText]}>
-                Plans
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.typeButton, type === 'travel' && styles.activeType]}
-              onPress={() => setType('travel')}
-            >
-              <Text style={[styles.typeText, type === 'travel' && styles.activeTypeText]}>
-                Travel
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.label}>Days</Text>
-          <View style={styles.dayContainer}>
-            <View style={styles.dayRow}>
-              <Text style={styles.dayText}>Saturday</Text>
-              <Switch
-                value={includesSaturday}
-                onValueChange={setIncludesSaturday}
-                trackColor={{ false: '#3A3A3C', true: '#00C851' }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
-            <View style={styles.dayRow}>
-              <Text style={styles.dayText}>Sunday</Text>
-              <Switch
-                value={includesSunday}
-                onValueChange={setIncludesSunday}
-                trackColor={{ false: '#3A3A3C', true: '#00C851' }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
-          </View>
-
-          <View style={styles.dayRow}>
-            <Text style={styles.dayText}>All Day Event</Text>
+          
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Travel Event</Text>
             <Switch
-              value={isAllDay}
-              onValueChange={setIsAllDay}
-              trackColor={{ false: '#3A3A3C', true: '#007AFF' }}
-              thumbColor="#FFFFFF"
+              value={eventData.isTravel}
+              onValueChange={(value) => setEventData({...eventData, isTravel: value})}
             />
           </View>
-
-          {!isAllDay && (
-            <View style={styles.timeContainer}>
-              <View style={styles.timeInput}>
-                <Text style={styles.label}>Start Time</Text>
-                <TextInput
-                  style={styles.input}
-                  value={startTime}
-                  onChangeText={setStartTime}
-                  placeholder="09:00"
-                  placeholderTextColor="#8E8E93"
-                />
-              </View>
-              <View style={styles.timeInput}>
-                <Text style={styles.label}>End Time</Text>
-                <TextInput
-                  style={styles.input}
-                  value={endTime}
-                  onChangeText={setEndTime}
-                  placeholder="17:00"
-                  placeholderTextColor="#8E8E93"
-                />
-              </View>
-            </View>
-          )}
-
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitText}>+ Add New Event</Text>
+          
+          <Text style={styles.label}>Select Days</Text>
+          <View style={styles.daySelector}>
+            <TouchableOpacity 
+              style={[styles.dayButton, eventData.selectedDays.saturday && styles.selectedDay]}
+              onPress={() => setEventData({
+                ...eventData, 
+                selectedDays: {...eventData.selectedDays, saturday: !eventData.selectedDays.saturday}
+              })}
+            >
+              <Text style={[styles.dayText, eventData.selectedDays.saturday && styles.selectedDayText]}>
+                Saturday
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.dayButton, eventData.selectedDays.sunday && styles.selectedDay]}
+              onPress={() => setEventData({
+                ...eventData, 
+                selectedDays: {...eventData.selectedDays, sunday: !eventData.selectedDays.sunday}
+              })}
+            >
+              <Text style={[styles.dayText, eventData.selectedDays.sunday && styles.selectedDayText]}>
+                Sunday
+              </Text>
+            </TouchableOpacity>
+          </View>
+          
+          <TouchableOpacity style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Save Event</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -200,102 +86,92 @@ export default function AddEvent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#f8f9fa',
   },
-  scrollContent: {
+  header: {
     padding: 20,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e9ecef',
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 8,
+    color: '#212529',
   },
   subtitle: {
-    fontSize: 18,
-    color: '#8E8E93',
-    marginBottom: 30,
-    textAlign: 'center',
+    fontSize: 16,
+    color: '#6c757d',
+    marginTop: 4,
+  },
+  content: {
+    flex: 1,
+    padding: 16,
   },
   form: {
-    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#212529',
     marginBottom: 8,
-    marginTop: 20,
+    marginTop: 16,
   },
   input: {
-    backgroundColor: '#2C2C2E',
+    borderWidth: 1,
+    borderColor: '#dee2e6',
     borderRadius: 8,
-    padding: 16,
-    color: '#FFFFFF',
+    padding: 12,
     fontSize: 16,
+    backgroundColor: '#fff',
   },
   textArea: {
-    height: 80,
+    height: 100,
     textAlignVertical: 'top',
   },
-  typeContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  typeButton: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    backgroundColor: '#2C2C2E',
-    borderRadius: 8,
-    marginHorizontal: 4,
-  },
-  activeType: {
-    backgroundColor: '#007AFF',
-  },
-  typeText: {
-    color: '#8E8E93',
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  activeTypeText: {
-    color: '#FFFFFF',
-  },
-  dayContainer: {
-    backgroundColor: '#2C2C2E',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 10,
-  },
-  dayRow: {
+  switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    marginTop: 16,
+  },
+  daySelector: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  dayButton: {
+    flex: 1,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#dee2e6',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  selectedDay: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
   },
   dayText: {
-    color: '#FFFFFF',
     fontSize: 16,
+    color: '#212529',
   },
-  timeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  selectedDayText: {
+    color: '#fff',
   },
-  timeInput: {
-    flex: 1,
-    marginHorizontal: 4,
-  },
-  submitButton: {
+  saveButton: {
     backgroundColor: '#007AFF',
+    padding: 16,
     borderRadius: 8,
-    paddingVertical: 16,
-    marginTop: 30,
-    marginBottom: 40,
+    alignItems: 'center',
+    marginTop: 24,
   },
-  submitText: {
-    color: '#FFFFFF',
+  saveButtonText: {
+    color: '#fff',
     fontSize: 18,
     fontWeight: '600',
-    textAlign: 'center',
   },
 });
