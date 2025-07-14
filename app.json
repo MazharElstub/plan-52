@@ -32,8 +32,7 @@
     "plugins": [
       "expo-router"
     ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    "scheme": "weekend-planner",
+    "newArchEnabled": false
   }
 }

@@ -1,19 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { EventCard } from '../../components/EventCard';
 
-export default function Dashboard() {
+export default function Calendar() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Weekend Planner</Text>
-        <Text style={styles.subtitle}>Next 12 Months</Text>
+        <Text style={styles.title}>Calendar View</Text>
+        <Text style={styles.subtitle}>Monthly weekend details</Text>
       </View>
       
-      <View style={styles.content}>
-        <Text style={styles.placeholderText}>Dashboard Coming Soon!</Text>
-        <Text style={styles.description}>Your weekend overview will appear here</Text>
-      </View>
+      <ScrollView style={styles.content}>
+        {/* Monthly calendar cards will be rendered here */}
+        <Text style={styles.placeholder}>Calendar view coming soon...</Text>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -42,18 +43,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  placeholderText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#212529',
-    marginBottom: 8,
-  },
-  description: {
+  placeholder: {
     fontSize: 16,
     color: '#6c757d',
     textAlign: 'center',
+    marginTop: 50,
   },
 });

@@ -2,28 +2,44 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../../firebase/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleAuth = () => {
+  const handleAuth = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
+
+    setIsLoading(true);
     
-    // Simple mock authentication
-    Alert.alert('Success', 'Login successful!', [
-      { text: 'OK', onPress: () => router.replace('/(tabs)') }
-    ]);
+    try {
+      if (isSignUp) {
+        await createUserWithEmailAndPassword(email, password);
+      } else {
+        await signInWithEmailAndPassword(email, password);
+      }
+      // Navigate to main app on successful authentication
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Weekend Planner</Text>
-        <Text style={styles.subtitle}>Test Login</Text>
+        <Text style={styles.subtitle}>
+          {isSignUp ? 'Create your account' : 'Welcome back'}
+        </Text>
         
         <View style={styles.form}>
           <TextInput
@@ -46,15 +62,20 @@ export default function Login() {
           <TouchableOpacity 
             style={styles.button}
             onPress={handleAuth}
+            disabled={isLoading}
           >
-            <Text style={styles.buttonText}>Sign In</Text>
+            <Text style={styles.buttonText}>
+              {isLoading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+            </Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => router.back()}
+            style={styles.switchButton}
+            onPress={() => setIsSignUp(!isSignUp)}
           >
-            <Text style={styles.backButtonText}>Back to Home</Text>
+            <Text style={styles.switchButtonText}>
+              {isSignUp ? 'Already have an account? Sign In' : 'Don\'t have an account? Sign Up'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -111,10 +132,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  backButton: {
+  switchButton: {
     alignItems: 'center',
   },
-  backButtonText: {
+  switchButtonText: {
     color: '#007AFF',
     fontSize: 16,
   },

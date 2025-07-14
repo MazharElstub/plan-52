@@ -3,10 +3,19 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useAuth } from '../../firebase/AuthContext';
+import { signOut } from '../../firebase/auth';
 
 export default function Profile() {
-  const handleSignOut = () => {
-    router.replace('/auth/login');
+  const { user } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/auth/login');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const menuItems = [
@@ -30,8 +39,8 @@ export default function Profile() {
           <View style={styles.avatar}>
             <Ionicons name="person" size={40} color="#6c757d" />
           </View>
-          <Text style={styles.userName}>Test User</Text>
-          <Text style={styles.userEmail}>test@example.com</Text>
+          <Text style={styles.userName}>{user?.displayName || 'Weekend Planner User'}</Text>
+          <Text style={styles.userEmail}>{user?.email || 'user@example.com'}</Text>
         </View>
         
         <View style={styles.menuSection}>
