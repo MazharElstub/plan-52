@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../firebase/auth';
+import { router } from 'expo-router';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../../firebase/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -23,6 +24,8 @@ export default function Login() {
       } else {
         await signInWithEmailAndPassword(email, password);
       }
+      // Navigate to main app on successful authentication
+      router.replace('/(tabs)');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {

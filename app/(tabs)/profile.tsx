@@ -2,15 +2,29 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { useAuth } from '../../firebase/AuthContext';
+import { signOut } from '../../firebase/auth';
 
 export default function Profile() {
+  const { user } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.replace('/auth/login');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
+
   const menuItems = [
     { title: 'Account Settings', icon: 'person-outline', action: () => {} },
     { title: 'Notifications', icon: 'notifications-outline', action: () => {} },
     { title: 'Privacy & Security', icon: 'shield-outline', action: () => {} },
     { title: 'Help & Support', icon: 'help-circle-outline', action: () => {} },
     { title: 'About', icon: 'information-circle-outline', action: () => {} },
-    { title: 'Sign Out', icon: 'log-out-outline', action: () => {}, isDestructive: true },
+    { title: 'Sign Out', icon: 'log-out-outline', action: handleSignOut, isDestructive: true },
   ];
 
   return (
@@ -25,8 +39,8 @@ export default function Profile() {
           <View style={styles.avatar}>
             <Ionicons name="person" size={40} color="#6c757d" />
           </View>
-          <Text style={styles.userName}>John Doe</Text>
-          <Text style={styles.userEmail}>john.doe@example.com</Text>
+          <Text style={styles.userName}>{user?.displayName || 'Weekend Planner User'}</Text>
+          <Text style={styles.userEmail}>{user?.email || 'user@example.com'}</Text>
         </View>
         
         <View style={styles.menuSection}>
